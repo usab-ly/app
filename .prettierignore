@@ -1,0 +1,14 @@
+build
+dist
+.next
+.vscode
+.vs
+.idea
+.nginx
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.netlify/

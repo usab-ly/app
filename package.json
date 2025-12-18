@@ -1,26 +1,73 @@
 {
-  "name": "usably",
-  "version": "0.1.0",
-  "private": true,
+  "name": "usably-browser",
+  "version": "1.0.0",
+  "description": "Electron + Next.js web browser with sidebar",
+  "main": "dist/electron/main.js",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "concurrently \"pnpm dev:web\" \"pnpm dev:electron\"",
+    "dev:web": "next dev",
+    "dev:electron": "wait-on http://localhost:3000 && pnpm build:electron && electron .",
+    "build:web": "next build",
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "build": "pnpm build:web && pnpm build:electron",
+    "start": "NODE_ENV=production electron dist/electron/main.js",
+    "package": "pnpm build && electron-builder",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+  },
+  "keywords": [
+    "electron",
+    "nextjs",
+    "browser"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "autoprefixer": "^10.4.17",
+    "concurrently": "^8.2.2",
+    "electron": "^30.0.1",
+    "electron-builder": "^24.13.3",
+    "postcss": "^8.4.33",
+    "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "wait-on": "^7.2.0"
   },
   "dependencies": {
-    "next": "16.0.7",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "next": "^14.1.0",
+    "prettier": "^3.7.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.0.7",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+  "build": {
+    "appId": "com.usably.browser",
+    "productName": "Usably Browser",
+    "files": [
+      "dist/**/*",
+      ".next/**/*",
+      "public/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "dist/electron/main.js"
+    },
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }
