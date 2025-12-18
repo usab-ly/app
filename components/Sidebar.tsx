@@ -8,21 +8,37 @@ interface SiteLink {
   icon: string;
 }
 
-const sites: SiteLink[] = [
-  { name: 'Google', url: 'https://www.google.com', icon: '🔍' },
-  { name: 'YouTube', url: 'https://www.youtube.com', icon: '▶️' },
-  { name: 'GitHub', url: 'https://github.com', icon: '💻' },
-  { name: 'Twitter', url: 'https://twitter.com', icon: '🐦' },
-  { name: 'Reddit', url: 'https://reddit.com', icon: '🔮' },
+const quickLinks: SiteLink[] = [
+  { name: 'Gmail', url: 'https://mail.google.com', icon: '📧' },
+  { name: 'Photos', url: 'https://photos.google.com', icon: '🖼️' },
+  { name: 'LinkedIn', url: 'https://linkedin.com', icon: '💼' },
+  { name: 'ChatGPT', url: 'https://chat.openai.com', icon: '🤖' },
+  { name: 'Notion', url: 'https://notion.so', icon: '📝' },
+  { name: 'YouTube', url: 'https://youtube.com', icon: '▶️' },
 ];
 
-export default function Sidebar() {
-  const [activeUrl, setActiveUrl] = useState<string>('https://www.google.com');
+const tabs: SiteLink[] = [
+  { name: 'Google', url: 'https://www.google.com', icon: 'G' },
+];
+
+interface SidebarProps {
+  onNavigate?: (url: string) => void;
+  currentUrl?: string;
+}
+
+export default function Sidebar({
+  onNavigate,
+  currentUrl = 'https://www.google.com',
+}: SidebarProps) {
+  const [activeUrl, setActiveUrl] = useState<string>(currentUrl);
   const [loading, setLoading] = useState<boolean>(false);
   const [hudVisible, setHudVisible] = useState<boolean>(true);
 
   useEffect(() => {
-    // Check HUD visibility state
+    setActiveUrl(currentUrl);
+  }, [currentUrl]);
+
+  useEffect(() => {
     const checkHudState = async () => {
       if (typeof window !== 'undefined' && window.api) {
         const state = await window.api.getHudState();
@@ -30,25 +46,20 @@ export default function Sidebar() {
       }
     };
     checkHudState();
-
-    // Poll for HUD state changes
     const interval = setInterval(checkHudState, 500);
     return () => clearInterval(interval);
   }, []);
 
   const handleNavigation = async (url: string) => {
-    if (typeof window === 'undefined' || !window.api) {
-      console.error('Electron API not available');
-      return;
-    }
-
     setLoading(true);
     try {
-      const result = await window.api.setUrl(url);
-      if (result.success) {
+      if (onNavigate) {
+        onNavigate(url);
         setActiveUrl(url);
-      } else {
-        console.error('Failed to load URL:', result.error);
+      } else if (typeof window !== 'undefined' && window.api) {
+        // Fallback to IPC if no callback provided (though we are moving away from this)
+        const result = await window.api.setUrl(url);
+        if (result.success) setActiveUrl(url);
       }
     } catch (error) {
       console.error('Error navigating:', error);
@@ -60,55 +71,88 @@ export default function Sidebar() {
   if (!hudVisible) return null;
 
   return (
-    <aside className='fixed top-[52px] right-0 w-[320px] h-[calc(100vh-52px)] bg-white/70 backdrop-blur-2xl border-l border-gray-200/50 flex flex-col shadow-2xl z-40 sidebar-grain'>
-      {/* Header */}
-      <div className='p-6 border-b border-gray-200/50'>
-        <h1 className='text-xl font-bold text-gray-900 tracking-tight'>
-          Usably
-        </h1>
-        <p className='text-xs text-gray-500 mt-1 font-medium'>
-          Quick Navigation
-        </p>
+    <aside className='w-[210px] h-screen flex flex-col text-white/90 transition-all duration-300 sidebar-grain'>
+      {/* Header Area */}
+      <div className='pt-5 px-4 pb-4 flex flex-col gap-4 titlebar'>
+        {/* Traffic Lights Spacer */}
+        <div className='h-4 w-full' />
+
+        {/* URL / Search Bar */}
+        <div className='bg-white/10 hover:bg-white/15 transition-colors rounded-lg p-2.5 flex items-center gap-2 text-sm cursor-text no-drag group border border-white/5 shadow-inner'>
+          <span className='opacity-50 text-xs'>🔒</span>
+          <span className='truncate flex-1 text-white/80 text-xs font-medium tracking-wide'>
+            {
+              activeUrl
+                .replace('https://www.', '')
+                .replace('https://', '')
+                .split('/')[0]
+            }
+          </span>
+          <button
+            onClick={() => handleNavigation(activeUrl)}
+            className='opacity-0 group-hover:opacity-50 hover:!opacity-100 transition-opacity'
+          >
+            <span className='text-xs'>↻</span>
+          </button>
+        </div>
       </div>
 
-      {/* Navigation Links */}
-      <nav className='flex-1 p-4 overflow-y-auto'>
-        <ul className='space-y-2'>
-          {sites.map((site) => (
-            <li key={site.url}>
-              <button
-                onClick={() => handleNavigation(site.url)}
-                disabled={loading}
-                className={`w-full text-left px-4 py-3 rounded-xl transition-all duration-200 flex items-center gap-3 group ${
-                  activeUrl === site.url
-                    ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02]'
-                    : 'hover:bg-gray-100/70 text-gray-700 hover:text-gray-900 hover:scale-[1.01]'
-                } ${
-                  loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                }`}
-              >
-                <span className='text-2xl'>{site.icon}</span>
-                <span className='font-semibold text-sm'>{site.name}</span>
-              </button>
-            </li>
+      {/* Quick Links Grid */}
+      <div className='px-4 grid grid-cols-3 gap-2 mb-6'>
+        {quickLinks.map((link) => (
+          <button
+            key={link.name}
+            onClick={() => handleNavigation(link.url)}
+            className='aspect-square rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-xl transition-all hover:scale-105 border border-white/5'
+            title={link.name}
+          >
+            {link.icon}
+          </button>
+        ))}
+      </div>
+
+      {/* Tabs Section */}
+      <div className='flex-1 px-3 overflow-y-auto'>
+        <div className='flex items-center justify-between px-2 mb-2'>
+          <span className='text-xs font-medium text-white/40 uppercase tracking-wider'>
+            Personal
+          </span>
+          <button className='text-white/20 hover:text-white/60 transition-colors'>
+            +
+          </button>
+        </div>
+
+        <div className='space-y-1'>
+          <button className='w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 text-white/60 hover:text-white/90 transition-all flex items-center gap-2 group'>
+            <span className='text-lg'>+</span>
+            <span className='text-sm font-medium'>New Tab</span>
+          </button>
+
+          {tabs.map((tab) => (
+            <button
+              key={tab.url}
+              onClick={() => handleNavigation(tab.url)}
+              className={`w-full text-left px-3 py-2.5 rounded-lg transition-all flex items-center gap-3 group ${
+                activeUrl.includes(tab.url.replace('https://www.', ''))
+                  ? 'bg-white/10 text-white shadow-sm border border-white/5'
+                  : 'hover:bg-white/5 text-white/70 hover:text-white'
+              }`}
+            >
+              <span className='text-sm opacity-80'>{tab.icon}</span>
+              <span className='text-sm font-medium truncate'>{tab.name}</span>
+              {loading &&
+                activeUrl.includes(tab.url.replace('https://www.', '')) && (
+                  <span className='ml-auto w-2 h-2 bg-white rounded-full animate-pulse' />
+                )}
+            </button>
           ))}
-        </ul>
-      </nav>
+        </div>
+      </div>
 
       {/* Footer */}
-      <div className='p-4 border-t border-gray-200/50'>
-        <div className='text-xs text-gray-500 text-center font-medium'>
-          {loading ? (
-            <span className='flex items-center justify-center gap-2'>
-              <span className='animate-spin'>⏳</span> Loading...
-            </span>
-          ) : (
-            <span className='flex items-center justify-center gap-2'>
-              <span className='w-2 h-2 bg-green-500 rounded-full animate-pulse'></span>
-              Ready
-            </span>
-          )}
-        </div>
+      <div className='p-4 flex justify-between items-center text-white/30 border-white/5'>
+        <button className='hover:text-white/80 transition-colors'>⚙️</button>
+        <button className='hover:text-white/80 transition-colors'>👤</button>
       </div>
     </aside>
   );

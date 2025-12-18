@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 255, 255, 255;
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 0, 0, 0;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  background: transparent; /* Allow vibrancy to show through */
   position: relative;
   overflow: hidden;
 }
@@ -20,7 +20,7 @@ body {
   overflow: hidden;
   height: 100vh;
   width: 100vw;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: transparent; /* Allow vibrancy to show through */
 }
 
 /* Custom draggable titlebar */

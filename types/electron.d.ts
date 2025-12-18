@@ -1,6 +1,19 @@
 export {};
 
 declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      webview: React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement> & {
+          src?: string;
+          preload?: string;
+          webpreferences?: string;
+        },
+        HTMLElement
+      >;
+    }
+  }
+
   interface Window {
     api: {
       setUrl: (

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Usably Browser',
+  title: 'Usably',
   description: 'A simple web browser built with Electron and Next.js',
 };
 
