@@ -21,7 +21,7 @@ function createWindow() {
     transparent: true, // Enable transparency for rounded corners
     titleBarStyle: 'hiddenInset', // macOS traffic lights
     trafficLightPosition: { x: 16, y: 16 }, // Position traffic lights
-    vibrancy: 'under-window', // macOS blur effect
+    vibrancy: 'sidebar', // macOS blur effect
     visualEffectState: 'active',
     backgroundColor: '#00000000', // Transparent background
     webPreferences: {
@@ -30,6 +30,8 @@ function createWindow() {
       nodeIntegration: false,
       webviewTag: true, // Enable webview tag
     },
+    backgroundMaterial: 'acrylic',
+    roundedCorners: true,
   });
 
   // Load the Next.js app
@@ -37,7 +39,7 @@ function createWindow() {
 
   // Open DevTools in development
   if (isDev) {
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
   }
 
   mainWindow.on('closed', () => {

@@ -5,10 +5,12 @@ import { useState, useRef, useEffect } from 'react';
 
 export default function Home() {
   const [currentUrl, setCurrentUrl] = useState('https://www.google.com');
+  const [currentFavicon, setCurrentFavicon] = useState<string | null>(null);
   const webviewRef = useRef<any>(null);
 
   const handleNavigate = (url: string) => {
     setCurrentUrl(url);
+    setCurrentFavicon(null); // Reset favicon on navigation
   };
 
   useEffect(() => {
@@ -18,6 +20,9 @@ export default function Home() {
     const injectCursor = () => {
       // Inject CSS for fake cursor
       webview.insertCSS(`
+        // * {
+        //   cursor: none !important;
+        // }
         #fake-cursor {
           position: fixed;
           width: 24px;
@@ -27,11 +32,11 @@ export default function Home() {
           border: 2px solid rgba(59, 130, 246, 1);
           pointer-events: none;
           z-index: 999999;
-          top: 50%;
-          left: 50%;
           transform: translate(-50%, -50%);
           box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-          transition: all 0.1s ease;
+          transition: transform 0.1s ease, background 0.1s ease;
+          top: 50%;
+          left: 50%;
         }
         #fake-cursor.clicking {
           transform: translate(-50%, -50%) scale(0.8);
@@ -51,73 +56,130 @@ export default function Home() {
           cursor.id = 'fake-cursor';
           document.body.appendChild(cursor);
 
-          // Function to simulate real mouse click with all events
-          function simulateClick(x, y) {
-            const element = document.elementFromPoint(x, y);
-            if (!element) return;
+          let x = window.innerWidth / 2;
+          let y = window.innerHeight / 2;
+          const step = 20;
 
-            const options = {
-              view: window,
-              bubbles: true,
-              cancelable: true,
-              clientX: x,
-              clientY: y,
-              screenX: x,
-              screenY: y,
-              button: 0,
-              buttons: 1
-            };
-
-            // Simulate complete mouse event sequence
-            element.dispatchEvent(new MouseEvent('mouseover', options));
-            element.dispatchEvent(new MouseEvent('mouseenter', options));
-            element.dispatchEvent(new MouseEvent('mousemove', options));
-            element.dispatchEvent(new MouseEvent('mousedown', options));
-            element.dispatchEvent(new MouseEvent('mouseup', options));
-            element.dispatchEvent(new MouseEvent('click', options));
+          function updateCursor() {
+            cursor.style.left = x + 'px';
+            cursor.style.top = y + 'px';
             
-            // Also try the native click as fallback
-            element.click();
+            // Send move event to host
+            console.log(JSON.stringify({
+              type: 'USABLY_MOVE',
+              x: x,
+              y: y
+            }));
           }
 
-          // Listen for Tab key
+          // Initial position
+          updateCursor();
+
+          // Track arrow keys for movement
           document.addEventListener('keydown', (e) => {
-            if (e.key === 'Tab') {
+            let moved = false;
+            
+            if (e.key === 'ArrowUp') { y -= step; moved = true; }
+            if (e.key === 'ArrowDown') { y += step; moved = true; }
+            if (e.key === 'ArrowLeft') { x -= step; moved = true; }
+            if (e.key === 'ArrowRight') { x += step; moved = true; }
+            
+            if (moved) {
               e.preventDefault();
-              
-              // Add clicking animation
+              // Clamp to screen
+              x = Math.max(0, Math.min(x, window.innerWidth));
+              y = Math.max(0, Math.min(y, window.innerHeight));
+              updateCursor();
+            }
+            
+            if (e.key === 'Enter') {
+              e.preventDefault();
               cursor.classList.add('clicking');
-              
-              // Click at the center of the viewport
-              const centerX = window.innerWidth / 2;
-              const centerY = window.innerHeight / 2;
-              
-              // Simulate click with full mouse event sequence
-              simulateClick(centerX, centerY);
-              
-              // Remove clicking animation
-              setTimeout(() => {
-                cursor.classList.remove('clicking');
-              }, 150);
+              console.log(JSON.stringify({ type: 'USABLY_CLICK', x, y }));
+              setTimeout(() => cursor.classList.remove('clicking'), 150);
             }
           });
+
+          // Extract Favicon
+          setTimeout(() => {
+            const link = document.querySelector("link[rel*='icon']");
+            const faviconUrl = link ? link.href : window.location.origin + '/favicon.ico';
+            console.log(JSON.stringify({
+              type: 'USABLY_FAVICON',
+              url: faviconUrl
+            }));
+          }, 1000);
         })();
       `);
     };
 
+    const handleConsoleMessage = (e: any) => {
+      try {
+        const message = JSON.parse(e.message);
+        if (message.type === 'USABLY_CLICK') {
+          const { x, y } = message;
+          // Send native input events for a robust click
+          webview.sendInputEvent({
+            type: 'mouseDown',
+            x,
+            y,
+            button: 'left',
+            clickCount: 1,
+          });
+
+          setTimeout(() => {
+            webview.sendInputEvent({
+              type: 'mouseUp',
+              x,
+              y,
+              button: 'left',
+              clickCount: 1,
+            });
+          }, 50);
+        } else if (message.type === 'USABLY_MOVE') {
+          const { x, y } = message;
+          webview.sendInputEvent({
+            type: 'mouseMove',
+            x,
+            y,
+          });
+        } else if (message.type === 'USABLY_FAVICON') {
+          if (message.url) {
+            setCurrentFavicon(message.url);
+          }
+        }
+      } catch (err) {
+        // Ignore non-JSON messages
+      }
+    };
+
+    const handleFaviconUpdated = (e: any) => {
+      if (e.favicons && e.favicons.length > 0) {
+        setCurrentFavicon(e.favicons[0]);
+      }
+    };
+
     webview.addEventListener('did-finish-load', injectCursor);
     webview.addEventListener('did-navigate', injectCursor);
+    webview.addEventListener('console-message', handleConsoleMessage);
+    webview.addEventListener('page-favicon-updated', handleFaviconUpdated);
 
     return () => {
       webview.removeEventListener('did-finish-load', injectCursor);
       webview.removeEventListener('did-navigate', injectCursor);
+      webview.removeEventListener('console-message', handleConsoleMessage);
+      webview.removeEventListener('page-favicon-updated', handleFaviconUpdated);
     };
   }, []);
 
   return (
-    <main className='flex h-screen w-screen overflow-hidden p-2 gap-2'>
-      <Sidebar onNavigate={handleNavigate} currentUrl={currentUrl} />
-      <div className='flex-1 relative rounded-md overflow-hidden shadow-2xl bg-white shadow-sm'>
+    <main className='flex h-screen w-screen overflow-hidden p-2 gap-2 bg-blue-500/30'>
+      <Sidebar
+        onNavigate={handleNavigate}
+        currentUrl={currentUrl}
+        currentFavicon={currentFavicon}
+      />
+      <div className='flex-1 relative rounded-md overflow-hidden shadow-2xl bg-white'>
         <webview
           ref={webviewRef}
           src={currentUrl}
