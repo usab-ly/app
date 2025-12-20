@@ -18,3 +18,14 @@ contextBridge.exposeInMainWorld('api', {
     return ipcRenderer.invoke('get-hud-state');
   },
 });
+
+contextBridge.exposeInMainWorld('electron', {
+  on: (channel: string, callback: () => void) => {
+    const subscription = (_event: any) => callback();
+    ipcRenderer.on(channel, subscription);
+    return subscription;
+  },
+  removeListener: (channel: string, subscription: any) => {
+    ipcRenderer.removeListener(channel, subscription);
+  },
+});

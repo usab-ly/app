@@ -13,7 +13,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className='overflow-hidden'>{children}</body>
+      <body className='overflow-hidden'>
+        <div className='absolute top-0 h-8 w-full titlebar' />
+        {children}
+      </body>
     </html>
   );
 }

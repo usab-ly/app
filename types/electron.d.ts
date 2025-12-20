@@ -23,5 +23,9 @@ declare global {
       toggleHud: () => Promise<{ hudVisible: boolean }>;
       getHudState: () => Promise<{ hudVisible: boolean }>;
     };
+    electron: {
+      on: (channel: string, callback: () => void) => any;
+      removeListener: (channel: string, subscription: any) => void;
+    };
   }
 }

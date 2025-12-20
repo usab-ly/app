@@ -2,16 +2,55 @@
 
 import Sidebar from '@/components/Sidebar';
 import { useState, useRef, useEffect } from 'react';
+import { PanelLeft } from 'lucide-react';
+import PrismaticBurst from '@/components/PrismaticBurst';
 
 export default function Home() {
-  const [currentUrl, setCurrentUrl] = useState('https://www.google.com');
+  const [currentUrl, setCurrentUrl] = useState('https://alg0run.netlify.app/');
   const [currentFavicon, setCurrentFavicon] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const webviewRef = useRef<any>(null);
 
   const handleNavigate = (url: string) => {
     setCurrentUrl(url);
     setCurrentFavicon(null); // Reset favicon on navigation
   };
+
+  const handleBack = () => {
+    if (webviewRef.current && webviewRef.current.canGoBack()) {
+      webviewRef.current.goBack();
+    }
+  };
+
+  const handleForward = () => {
+    if (webviewRef.current && webviewRef.current.canGoForward()) {
+      webviewRef.current.goForward();
+    }
+  };
+
+  const handleRefresh = () => {
+    if (webviewRef.current) {
+      webviewRef.current.reload();
+    }
+  };
+
+  const handleToggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  useEffect(() => {
+    // Listen for toggle-sidebar event from Electron
+    const handleToggle = () => {
+      setIsSidebarOpen((prev) => !prev);
+    };
+
+    if (window.electron) {
+      const subscription = window.electron.on('toggle-sidebar', handleToggle);
+      return () => {
+        window.electron.removeListener('toggle-sidebar', subscription);
+      };
+    }
+  }, []);
 
   useEffect(() => {
     const webview = webviewRef.current;
@@ -173,19 +212,38 @@ export default function Home() {
   }, []);
 
   return (
-    <main className='flex h-screen w-screen overflow-hidden p-2 gap-2 bg-blue-500/30'>
-      <Sidebar
-        onNavigate={handleNavigate}
-        currentUrl={currentUrl}
-        currentFavicon={currentFavicon}
-      />
-      <div className='flex-1 relative rounded-md overflow-hidden shadow-2xl bg-white'>
+    <main className='flex h-screen w-screen overflow-hidden p-2 gap-2 bg-black/50 relative sidebar-grain'>
+      {isSidebarOpen && (
+        <Sidebar
+          onNavigate={handleNavigate}
+          onBack={handleBack}
+          onForward={handleForward}
+          onRefresh={handleRefresh}
+          onToggleSidebar={handleToggleSidebar}
+          currentUrl={currentUrl}
+          currentFavicon={currentFavicon}
+        />
+      )}
+
+      {/* Webview */}
+      <div className='flex-1 relative overflow-hidden shadow-2xl bg-white rounded-sm'>
         <webview
           ref={webviewRef}
           src={currentUrl}
           className='w-full h-full'
           webpreferences='contextIsolation=yes, nodeIntegration=no'
         />
+        {/* Prismatic Overlay */}
+        <div className='absolute inset-0 pointer-events-none'>
+          <PrismaticBurst
+            intensity={0.8}
+            speed={0.5}
+            animationType='rotate'
+            distort={0.3}
+            mixBlendMode='screen'
+            rayCount={12}
+          />
+        </div>
       </div>
     </main>
   );

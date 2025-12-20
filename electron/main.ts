@@ -1,4 +1,10 @@
-import { app, BrowserWindow, BrowserView, ipcMain } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  BrowserView,
+  ipcMain,
+  globalShortcut,
+} from 'electron';
 import * as path from 'path';
 
 let mainWindow: BrowserWindow | null = null;
@@ -42,6 +48,31 @@ function createWindow() {
     // mainWindow.webContents.openDevTools();
   }
 
+  // Register shortcut handler
+  const registerShortcut = () => {
+    const ret = globalShortcut.register('CommandOrControl+S', () => {
+      if (mainWindow) {
+        console.log('CommandOrControl+S is pressed');
+        mainWindow.webContents.send('toggle-sidebar');
+      }
+    });
+    if (ret) {
+      console.log('Shortcut registered');
+    }
+  };
+
+  const unregisterShortcut = () => {
+    globalShortcut.unregister('CommandOrControl+S');
+    console.log('Shortcut unregistered');
+  };
+
+  // Register on focus, unregister on blur
+  mainWindow.on('focus', registerShortcut);
+  mainWindow.on('blur', unregisterShortcut);
+
+  // Register initially since window starts focused
+  registerShortcut();
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
@@ -58,6 +89,8 @@ ipcMain.handle('get-hud-state', async () => {
   return { hudVisible: isHudVisible };
 });
 
+app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal');
+
 // App lifecycle
 app.whenReady().then(() => {
   createWindow();
@@ -73,4 +106,9 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('will-quit', () => {
+  // Unregister all shortcuts
+  globalShortcut.unregisterAll();
 });
