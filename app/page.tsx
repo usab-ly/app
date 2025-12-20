@@ -3,7 +3,6 @@
 import Sidebar from '@/components/Sidebar';
 import { useState, useRef, useEffect } from 'react';
 import { PanelLeft } from 'lucide-react';
-import PrismaticBurst from '@/components/PrismaticBurst';
 
 export default function Home() {
   const [currentUrl, setCurrentUrl] = useState('https://alg0run.netlify.app/');
@@ -233,16 +232,8 @@ export default function Home() {
           className='w-full h-full'
           webpreferences='contextIsolation=yes, nodeIntegration=no'
         />
-        {/* Prismatic Overlay */}
-        <div className='absolute inset-0 pointer-events-none'>
-          <PrismaticBurst
-            intensity={0.8}
-            speed={0.5}
-            animationType='rotate'
-            distort={0.3}
-            mixBlendMode='screen'
-            rayCount={12}
-          />
+        <div className='pointer-events-none absolute inset-0 overflow-hidden'>
+          <div className='webview-blob' />
         </div>
       </div>
     </main>

@@ -53,6 +53,53 @@ body::before {
   mix-blend-mode: overlay;
 }
 
+.webview-blob {
+  position: absolute;
+  inset: -35%;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    transparent 55%,
+    rgba(255, 105, 180, 0.35) 60%,
+    rgba(123, 104, 238, 0.4) 68%
+  );
+  filter: drop-shadow(0 0 3vmin #d8bfd8) drop-shadow(0 5vmin 4vmin #da70d6)
+    drop-shadow(2vmin -2vmin 15vmin #7b68ee) drop-shadow(0 0 7vmin #ba55d3);
+  opacity: 0.75;
+  pointer-events: none;
+
+  animation: blobPulse 2s ease-in-out infinite;
+}
+
+@keyframes blobPulse {
+  0%,
+  100% {
+    opacity: 0.75;
+    filter: drop-shadow(0 0 3vmin #d8bfd8) drop-shadow(0 5vmin 4vmin #da70d6)
+      drop-shadow(2vmin -2vmin 15vmin #7b68ee) drop-shadow(0 0 7vmin #ba55d3);
+  }
+  50% {
+    opacity: 0.85;
+    filter: drop-shadow(0 0 5vmin #d8bfd8) drop-shadow(0 6vmin 5vmin #da70d6)
+      drop-shadow(3vmin -3vmin 18vmin #7b68ee) drop-shadow(0 0 10vmin #ba55d3);
+  }
+}
+
+@keyframes blobMorph {
+  0%,
+  100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  25% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  50% {
+    border-radius: 50% 40% 60% 50% / 40% 70% 50% 60%;
+  }
+  75% {
+    border-radius: 70% 30% 50% 40% / 60% 40% 60% 50%;
+  }
+}
+
 /* Smooth scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
