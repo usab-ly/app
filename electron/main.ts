@@ -1,14 +1,7 @@
-import {
-  app,
-  BrowserWindow,
-  BrowserView,
-  ipcMain,
-  globalShortcut,
-} from 'electron';
+import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
 import * as path from 'path';
 
 let mainWindow: BrowserWindow | null = null;
-let browserView: BrowserView | null = null;
 let isHudVisible = true;
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -23,25 +16,22 @@ function createWindow() {
     height: 900,
     minWidth: 800,
     minHeight: 600,
-    frame: false, // Frameless window for custom title bar
-    transparent: true, // Enable transparency for rounded corners
-    titleBarStyle: 'hiddenInset', // macOS traffic lights
-    trafficLightPosition: { x: 16, y: 16 }, // Position traffic lights
-    vibrancy: 'sidebar', // macOS blur effect
-    visualEffectState: 'active',
-    backgroundColor: '#00000000', // Transparent background
+    frame: false,
+    titleBarStyle: 'hiddenInset',
+    trafficLightPosition: { x: 16, y: 16 },
+    vibrancy: 'under-window',
+    transparent: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
-      webviewTag: true, // Enable webview tag
+      webviewTag: true,
     },
     backgroundMaterial: 'acrylic',
-    roundedCorners: true,
   });
 
   // Load the Next.js app
-  mainWindow.loadURL(NEXT_URL);
+  mainWindow.loadURL(NEXT_URL + '/agent/');
 
   // Open DevTools in development
   if (isDev) {
@@ -56,14 +46,10 @@ function createWindow() {
         mainWindow.webContents.send('toggle-sidebar');
       }
     });
-    if (ret) {
-      console.log('Shortcut registered');
-    }
   };
 
   const unregisterShortcut = () => {
     globalShortcut.unregister('CommandOrControl+S');
-    console.log('Shortcut unregistered');
   };
 
   // Register on focus, unregister on blur
@@ -75,6 +61,42 @@ function createWindow() {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+}
+
+function createWindow2() {
+  // Create the browser window with custom title bar for macOS
+  let mainWindow2: BrowserWindow | null = new BrowserWindow({
+    width: 850,
+    maxWidth: 850,
+    minWidth: 850,
+    height: 550,
+    maxHeight: 550,
+    minHeight: 550,
+    frame: false,
+    transparent: true,
+    titleBarStyle: 'hiddenInset',
+    trafficLightPosition: { x: 16, y: 16 },
+    visualEffectState: 'active',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      webviewTag: true, // Enable webview tag
+    },
+    // backgroundMaterial: 'acrylic',
+  });
+
+  // Load the Next.js app
+  mainWindow2.loadURL(NEXT_URL + '/welcome/');
+
+  // Open DevTools in development
+  if (isDev) {
+    // mainWindow.webContents.openDevTools();
+  }
+
+  mainWindow2.on('closed', () => {
+    mainWindow2 = null;
   });
 }
 
@@ -93,8 +115,8 @@ app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal');
 
 // App lifecycle
 app.whenReady().then(() => {
-  createWindow();
-
+  // createWindow();
+  createWindow2();
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       createWindow();

@@ -12,6 +12,7 @@ import {
   Gift,
   Search,
   LucideIcon,
+  Cherry,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -38,6 +39,7 @@ interface SidebarProps {
   onForward?: () => void;
   onRefresh?: () => void;
   onToggleSidebar?: () => void;
+  onRunFlow?: (flowName: string) => void;
   currentUrl?: string;
   currentFavicon?: string | null;
 }
@@ -48,6 +50,7 @@ export default function Sidebar({
   onForward,
   onRefresh,
   onToggleSidebar,
+  onRunFlow,
   currentUrl = 'https://www.google.com',
   currentFavicon,
 }: SidebarProps) {
@@ -71,9 +74,9 @@ export default function Sidebar({
   if (!hudVisible) return null;
 
   return (
-    <div className='h-screen flex'>
+    <div className='h-screen flex rounded-l-4xl '>
       {/* Icon Navigation Rail */}
-      <aside className='w-[100px] h-full flex flex-col items-center justify-between backdrop-blur-3xl pt-8 pb-4 absolute top-0 left-0'>
+      <aside className='w-25 h-full flex flex-col items-center justify-between backdrop-blur-3xl pt-8 pb-4 absolute top-0 left-0'>
         <div className='h-4 w-full titlebar' />
         {/* Traffic lights spacer */}
 
@@ -95,7 +98,7 @@ export default function Sidebar({
         </div> */}
 
         {/* Nav Items */}
-        <nav className='flex flex-col items-center justify-start gap-2 mt-2 h-fit'>
+        <nav className='flex flex-col items-center justify-start gap-2 mt-2 h-fit sidebar-grain'>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -156,7 +159,7 @@ export default function Sidebar({
         {/* Tab Content */}
         <div className='flex-1 overflow-y-auto pb-4'>
           {activeTab === 'agent' && <AgentPanel />}
-          {activeTab === 'flows' && <FlowsPanel />}
+          {activeTab === 'flows' && <FlowsPanel onRunFlow={onRunFlow} />}
           {activeTab === 'reports' && <ReportsPanel />}
           {activeTab === 'issues' && <IssuesPanel />}
           {activeTab === 'history' && <HistoryPanel />}
@@ -235,7 +238,7 @@ function AgentPanel() {
   );
 }
 
-function FlowsPanel() {
+function FlowsPanel({ onRunFlow }: { onRunFlow?: (name: string) => void }) {
   const flows = [
     { id: 1, name: 'Sign Up Flow', steps: 5, lastRun: '2 hours ago' },
     { id: 2, name: 'Checkout Process', steps: 8, lastRun: '1 day ago' },
@@ -265,7 +268,13 @@ function FlowsPanel() {
                 {flow.steps} steps • Last run: {flow.lastRun}
               </p>
             </div>
-            <button className='opacity-0 group-hover:opacity-100 text-xs px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-all'>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onRunFlow?.(flow.name);
+              }}
+              className='opacity-0 group-hover:opacity-100 text-xs px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-all'
+            >
               Run
             </button>
           </div>

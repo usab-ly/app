@@ -26,6 +26,7 @@ declare global {
     electron: {
       on: (channel: string, callback: () => void) => any;
       removeListener: (channel: string, subscription: any) => void;
+      send: (channel: string, data?: any) => void;
     };
   }
 }
