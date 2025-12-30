@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ghostery/adblocker-electron':
+        specifier: ^2.13.2
+        version: 2.13.2(electron@30.5.1)
       '@google/generative-ai':
         specifier: ^0.24.1
         version: 0.24.1
@@ -41,6 +44,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      cross-fetch:
+        specifier: ^4.1.0
+        version: 4.1.0
       electron-liquid-glass:
         specifier: ^1.1.1
         version: 1.1.1
@@ -590,6 +596,28 @@ packages:
   '@firebase/webchannel-wrapper@1.0.5':
     resolution: {integrity: sha512-+uGNN7rkfn41HLO0vekTFhTxk61eKa8mTpRGLO0QSqlQdKvIoGAvLp3ppdVIWbTGYJWM6Kp0iN+PjMIOcnVqTw==}
 
+  '@ghostery/adblocker-content@2.13.2':
+    resolution: {integrity: sha512-noCmPF7vdzScClz1fEcN05a53x/114WpxISRbTAjDrAMYxHeWkG+NdytGLqauEPL68fDunr70vgoyR1YnY1AkA==}
+
+  '@ghostery/adblocker-electron-preload@2.13.2':
+    resolution: {integrity: sha512-ie0RoKJtEAEVk5c2udj/bX6ikTRaCgResd5N+zv7Gq6qJ5jh00ChjZIAVTSZ0DKGPbuFFtv8jqjBAYzA0nhLgw==}
+    peerDependencies:
+      electron: '>11'
+
+  '@ghostery/adblocker-electron@2.13.2':
+    resolution: {integrity: sha512-w13V6DDfMFiheCOrgNjh8qkoWMiCi5tKzQRq18UaN2jbW3zho1NLztmIs5n8KSDEOV1gu3thk3JNil0RFxFD9w==}
+    peerDependencies:
+      electron: '>11'
+
+  '@ghostery/adblocker-extended-selectors@2.13.2':
+    resolution: {integrity: sha512-5djmtmtCD+xCeKjOPDz5W369wTOZMj8wdl1KLRGcBIGOdD8p2QaX+BjXoDiQ2TCj1V24k68IlrPIbIFwXYbEsA==}
+
+  '@ghostery/adblocker@2.13.2':
+    resolution: {integrity: sha512-OZ3lG665ZTijchjclqFfW1I6BVE7pesu5tNWR7UZueSgWgHjCinw8cT1NEWmUocjQpBYBYl+rLaV0+HY7kGQAg==}
+
+  '@ghostery/url-parser@1.3.0':
+    resolution: {integrity: sha512-FEzdSeiva0Mt3bR4xePFzthhjT4IzvA5QTvS1xXkNyLpMGeq40mb3V2fSs0ZItRaP9IybZthDfHUSbQ1HLdx4Q==}
+
   '@google-cloud/firestore@7.11.6':
     resolution: {integrity: sha512-EW/O8ktzwLfyWBOsNuhRoMi8lrC3clHM5LVFhGvO1HCsLozCOOXRAlHrYBoE6HL42Sc8yYMuCb2XqcnJ4OOEpw==}
     engines: {node: '>=14.0.0'}
@@ -1009,6 +1037,24 @@ packages:
   '@remix-run/router@1.23.1':
     resolution: {integrity: sha512-vDbaOzF7yT2Qs4vO6XV1MHcJv+3dgR1sT+l3B8xxOVhUC336prMvqrvsLL/9Dnw2xr6Qhz4J0dmS0llNAbnUmQ==}
     engines: {node: '>=14.0.0'}
+
+  '@remusao/guess-url-type@2.1.0':
+    resolution: {integrity: sha512-zI3dlTUxpjvx2GCxp9nLOSK5yEIqDCpxlAVGwb2Y49RKkS72oeNaxxo+VWS5+XQ5+Mf8Zfp9ZXIlk+G5eoEN8A==}
+
+  '@remusao/small@2.1.0':
+    resolution: {integrity: sha512-Y1kyjZp7JU7dXdyOdxHVNfoTr1XLZJTyQP36/esZUU/WRWq9XY0PV2HsE3CsIHuaTf4pvgWv2pvzvnZ//UHIJQ==}
+
+  '@remusao/smaz-compress@2.2.0':
+    resolution: {integrity: sha512-TXpTPgILRUYOt2rEe0+9PC12xULPvBqeMpmipzB9A7oM4fa9Ztvy9lLYzPTd7tiQEeoNa1pmxihpKfJtsxnM/w==}
+
+  '@remusao/smaz-decompress@2.2.0':
+    resolution: {integrity: sha512-ERAPwxPaA0/yg4hkNU7T2S+lnp9jj1sApcQMtOyROvOQyo+Zuh6Hn/oRcXr8mmjlYzyRaC7E6r3mT1nrdHR6pg==}
+
+  '@remusao/smaz@2.2.0':
+    resolution: {integrity: sha512-eSd3Qs0ELP/e7tU1SI5RWXcCn9KjDgvBY+KtWbL4i2QvvHhJOfdIt4v0AA3S5BbLWAr5dCEC7C4LUfogDm6q/Q==}
+
+  '@remusao/trie@2.1.0':
+    resolution: {integrity: sha512-Er3Q8q0/2OcCJPQYJOPLmCuqO0wu7cav3SPtpjlxSbjFi1x+A1pZkkLD6c9q2rGEkGW/tkrRzfrhNMt8VQjzXg==}
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -1931,6 +1977,9 @@ packages:
     resolution: {integrity: sha512-+/HKd6EgcQCJGh2PSjZuUitQBQynKor4wrFbRg4DtAgS1aWO+gU52xpH7M9ScGgXSYmAVS9bIJ8EzuaGw0oNAw==}
     engines: {node: '>=10.14', npm: '>=6', yarn: '>=1'}
     hasBin: true
+
+  cross-fetch@4.1.0:
+    resolution: {integrity: sha512-uKm5PU+MHTootlWEY+mZ4vvXoCn4fLQxT9dSc1sXVMSFkINTJVN8cAQROpwcKm8bJ/c7rgZVIBWzH5T78sNZZw==}
 
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
@@ -4034,6 +4083,12 @@ packages:
     resolution: {integrity: sha512-j2Zq4NyQYG5XMST4cbs02Ak8iJUdxRM0XI5QyxXuZOzKOINmWurp3smXu3y5wDcJrptwpSjgXHzIQxR0omXljQ==}
     engines: {node: '>=12.0.0'}
 
+  tldts-core@7.0.19:
+    resolution: {integrity: sha512-lJX2dEWx0SGH4O6p+7FPwYmJ/bu1JbcGJ8RLaG9b7liIgZ85itUVEPbMtWRVrde/0fnDPEPHW10ZsKW3kVsE9A==}
+
+  tldts-experimental@7.0.19:
+    resolution: {integrity: sha512-Pu+urmGB5Ja0SQxzF0j1mG40Swnq0xrC6lcQwpPbpD0VlRtqym2Y1bfZen/+mKZ022/FxBIbtQzOU1KRrO1RSg==}
+
   tmp-promise@3.0.3:
     resolution: {integrity: sha512-RwM7MoPojPxsOBYnyd2hy0bxtIlVrihNs9pj5SUvY8Zz1sQcQG2tG1hSr8PDxfgEB8RNKDhqbIlroIarSNDNsQ==}
 
@@ -4916,6 +4971,38 @@ snapshots:
 
   '@firebase/webchannel-wrapper@1.0.5': {}
 
+  '@ghostery/adblocker-content@2.13.2':
+    dependencies:
+      '@ghostery/adblocker-extended-selectors': 2.13.2
+
+  '@ghostery/adblocker-electron-preload@2.13.2(electron@30.5.1)':
+    dependencies:
+      '@ghostery/adblocker-content': 2.13.2
+      electron: 30.5.1
+
+  '@ghostery/adblocker-electron@2.13.2(electron@30.5.1)':
+    dependencies:
+      '@ghostery/adblocker': 2.13.2
+      '@ghostery/adblocker-electron-preload': 2.13.2(electron@30.5.1)
+      electron: 30.5.1
+      tldts-experimental: 7.0.19
+
+  '@ghostery/adblocker-extended-selectors@2.13.2': {}
+
+  '@ghostery/adblocker@2.13.2':
+    dependencies:
+      '@ghostery/adblocker-content': 2.13.2
+      '@ghostery/adblocker-extended-selectors': 2.13.2
+      '@ghostery/url-parser': 1.3.0
+      '@remusao/guess-url-type': 2.1.0
+      '@remusao/small': 2.1.0
+      '@remusao/smaz': 2.2.0
+      tldts-experimental: 7.0.19
+
+  '@ghostery/url-parser@1.3.0':
+    dependencies:
+      tldts-experimental: 7.0.19
+
   '@google-cloud/firestore@7.11.6':
     dependencies:
       '@opentelemetry/api': 1.9.0
@@ -5316,6 +5403,23 @@ snapshots:
       - immer
 
   '@remix-run/router@1.23.1': {}
+
+  '@remusao/guess-url-type@2.1.0': {}
+
+  '@remusao/small@2.1.0': {}
+
+  '@remusao/smaz-compress@2.2.0':
+    dependencies:
+      '@remusao/trie': 2.1.0
+
+  '@remusao/smaz-decompress@2.2.0': {}
+
+  '@remusao/smaz@2.2.0':
+    dependencies:
+      '@remusao/smaz-compress': 2.2.0
+      '@remusao/smaz-decompress': 2.2.0
+
+  '@remusao/trie@2.1.0': {}
 
   '@rtsao/scc@1.1.0': {}
 
@@ -6330,6 +6434,12 @@ snapshots:
   cross-env@7.0.3:
     dependencies:
       cross-spawn: 7.0.6
+
+  cross-fetch@4.1.0:
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
 
   cross-spawn@7.0.6:
     dependencies:
@@ -8798,6 +8908,12 @@ snapshots:
     dependencies:
       fdir: 6.5.0(picomatch@4.0.3)
       picomatch: 4.0.3
+
+  tldts-core@7.0.19: {}
+
+  tldts-experimental@7.0.19:
+    dependencies:
+      tldts-core: 7.0.19
 
   tmp-promise@3.0.3:
     dependencies:

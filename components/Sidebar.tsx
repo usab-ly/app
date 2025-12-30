@@ -39,7 +39,7 @@ interface SidebarProps {
   onForward?: () => void;
   onRefresh?: () => void;
   onToggleSidebar?: () => void;
-  onRunFlow?: (flowName: string) => void;
+  onRunFlow?: (flowName: string, flowGoal?: string) => void;
   currentUrl?: string;
   currentFavicon?: string | null;
 }
@@ -238,12 +238,72 @@ function AgentPanel() {
   );
 }
 
-function FlowsPanel({ onRunFlow }: { onRunFlow?: (name: string) => void }) {
+function FlowsPanel({
+  onRunFlow,
+}: {
+  onRunFlow?: (name: string, goal?: string) => void;
+}) {
   const flows = [
-    { id: 1, name: 'Sign Up Flow', steps: 5, lastRun: '2 hours ago' },
-    { id: 2, name: 'Checkout Process', steps: 8, lastRun: '1 day ago' },
-    { id: 3, name: 'Password Reset', steps: 3, lastRun: 'Never' },
-    { id: 4, name: 'Profile Update', steps: 4, lastRun: '3 days ago' },
+    {
+      id: 15,
+      name: 'Product Thoughts',
+      goal: 'User test this website and provide feedback on the product and what could be improved',
+      lastRun: 'Never',
+    },
+    {
+      id: 14,
+      name: 'Do the Hello World Algo',
+      goal: 'Complete the Hello World algorithm on this Algorithm Typing website',
+      lastRun: 'Never',
+    },
+    {
+      id: 13,
+      name: 'Electric Toothbrush Search',
+      goal: 'Search for an article for the best electric toothbrushes',
+      lastRun: 'Never',
+    },
+    {
+      id: 12,
+      name: 'Dandruff Search',
+      goal: 'Go to amazon.com and search for dandruff shampoos',
+      lastRun: 'Never',
+    },
+    {
+      id: 11,
+      name: 'Search For Arun Deegutla Linkedin',
+      goal: 'Search for Arun Deegutla on Google and navigate to his profile on Linkedin',
+      lastRun: '2 hours ago',
+    },
+    {
+      id: 10,
+      name: 'Login with Codeforces',
+      goal: 'Navigate to the authentication page and log in with codeforces',
+      lastRun: '2 hours ago',
+    },
+    {
+      id: 1,
+      name: 'Sign Up Flow',
+      goal: 'Sign up for a new account using a temporary email',
+      lastRun: '2 hours ago',
+    },
+    {
+      id: 2,
+      name: 'Checkout Process',
+      goal: 'Add an item to cart and complete checkout',
+      lastRun: '1 day ago',
+    },
+    {
+      id: 3,
+      name: 'Password Reset',
+      goal: 'Reset password for an existing account',
+      lastRun: 'Never',
+    },
+    {
+      id: 4,
+      name: 'Profile Update',
+      goal: 'Update user profile name and bio',
+      lastRun: '3 days ago',
+    },
   ];
 
   return (
@@ -265,13 +325,13 @@ function FlowsPanel({ onRunFlow }: { onRunFlow?: (name: string) => void }) {
             <div>
               <h3 className='text-sm font-medium text-white/90'>{flow.name}</h3>
               <p className='text-xs text-white/50 mt-1'>
-                {flow.steps} steps • Last run: {flow.lastRun}
+                Last run: {flow.lastRun}
               </p>
             </div>
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onRunFlow?.(flow.name);
+                onRunFlow?.(flow.name, flow.goal);
               }}
               className='opacity-0 group-hover:opacity-100 text-xs px-3 py-1.5 rounded-lg bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 transition-all'
             >

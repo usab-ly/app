@@ -1,5 +1,7 @@
-import { app, BrowserWindow, ipcMain, globalShortcut } from 'electron';
+import { app, BrowserWindow, ipcMain, globalShortcut, session } from 'electron';
 import * as path from 'path';
+import { ElectronBlocker } from '@ghostery/adblocker-electron';
+import fetch from 'cross-fetch';
 
 let mainWindow: BrowserWindow | null = null;
 let isHudVisible = true;
@@ -114,7 +116,15 @@ ipcMain.handle('get-hud-state', async () => {
 app.commandLine.appendSwitch('enable-features', 'GlobalShortcutsPortal');
 
 // App lifecycle
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  try {
+    const blocker = await ElectronBlocker.fromPrebuiltAdsAndTracking(fetch);
+    blocker.enableBlockingInSession(session.defaultSession);
+    console.log('AdBlocker enabled!');
+  } catch (error) {
+    console.error('Failed to enable AdBlocker:', error);
+  }
+
   // createWindow();
   createWindow2();
   app.on('activate', () => {
