@@ -243,6 +243,19 @@ function FlowsPanel({
 }: {
   onRunFlow?: (name: string, goal?: string) => void;
 }) {
+  const [showNewFlowModal, setShowNewFlowModal] = useState(false);
+  const [newFlowName, setNewFlowName] = useState('');
+  const [newFlowGoal, setNewFlowGoal] = useState('');
+
+  const handleRunFlow = () => {
+    if (newFlowName.trim() && newFlowGoal.trim()) {
+      onRunFlow?.(newFlowName, newFlowGoal);
+      setShowNewFlowModal(false);
+      setNewFlowName('');
+      setNewFlowGoal('');
+    }
+  };
+
   const flows = [
     {
       id: 15,
@@ -251,9 +264,15 @@ function FlowsPanel({
       lastRun: 'Never',
     },
     {
+      id: 145,
+      name: "Find the top person's Average WPM on the leaderboard",
+      goal: "find the top person's Average WPM on the leaderboard and stop when you find it on the screen",
+      lastRun: 'Never',
+    },
+    {
       id: 14,
-      name: 'Do the Hello World Algo',
-      goal: 'Complete the Hello World algorithm on this Algorithm Typing website',
+      name: 'Do the Ternary Search Algo',
+      goal: 'Do the Ternary Search algorithm on this Algorithm Typing website',
       lastRun: 'Never',
     },
     {
@@ -270,8 +289,8 @@ function FlowsPanel({
     },
     {
       id: 11,
-      name: 'Search For Arun Deegutla Linkedin',
-      goal: 'Search for Arun Deegutla on Google and navigate to his profile on Linkedin',
+      name: 'Search For Brennan Cleland Linkedin',
+      goal: 'Search for Brennan Cleland on Google and navigate to his profile on Linkedin',
       lastRun: '2 hours ago',
     },
     {
@@ -312,10 +331,80 @@ function FlowsPanel({
         <p className='text-xs text-white/40 uppercase tracking-wider font-medium'>
           User Flows
         </p>
-        <button className='text-xs text-purple-400 hover:text-purple-300 transition-colors'>
+        <button
+          onClick={() => setShowNewFlowModal(true)}
+          className='text-xs text-purple-400 hover:text-purple-300 transition-colors'
+        >
           + New Flow
         </button>
       </div>
+
+      {/* New Flow Modal */}
+      {showNewFlowModal && (
+        <div
+          className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'
+          onClick={() => setShowNewFlowModal(false)}
+        >
+          <div
+            className='bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-2xl p-6 w-[500px] max-w-[90vw] shadow-2xl'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className='text-lg font-semibold text-white/90 mb-4'>
+              Create New Flow
+            </h2>
+
+            <div className='space-y-4'>
+              <div>
+                <label className='block text-xs text-white/50 mb-2 uppercase tracking-wider'>
+                  Flow Name
+                </label>
+                <input
+                  type='text'
+                  value={newFlowName}
+                  onChange={(e) => setNewFlowName(e.target.value)}
+                  placeholder='e.g., Sign Up Flow, Checkout Process'
+                  className='w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 transition-all'
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className='block text-xs text-white/50 mb-2 uppercase tracking-wider'>
+                  Flow Goal
+                </label>
+                <textarea
+                  value={newFlowGoal}
+                  onChange={(e) => setNewFlowGoal(e.target.value)}
+                  placeholder='Describe what the agent should accomplish...'
+                  rows={4}
+                  className='w-full bg-white/5 border border-white/10 rounded-lg py-2.5 px-4 text-sm text-white/90 placeholder:text-white/30 focus:outline-none focus:border-purple-500/50 focus:bg-white/10 transition-all resize-none'
+                />
+              </div>
+            </div>
+
+            <div className='flex items-center justify-end gap-3 mt-6'>
+              <button
+                onClick={() => {
+                  setShowNewFlowModal(false);
+                  setNewFlowName('');
+                  setNewFlowGoal('');
+                }}
+                className='px-4 py-2 rounded-lg text-sm text-white/70 hover:text-white/90 hover:bg-white/5 transition-all'
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRunFlow}
+                disabled={!newFlowName.trim() || !newFlowGoal.trim()}
+                className='px-4 py-2 rounded-lg text-sm bg-purple-500/20 text-purple-400 hover:bg-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all'
+              >
+                Run
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {flows.map((flow) => (
         <div
           key={flow.id}

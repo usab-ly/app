@@ -20,6 +20,7 @@ interface BrowserBarProps {
   onRefresh: () => void;
   onViewportChange: (width: string, height: string) => void;
   isAgentRunning: boolean;
+  isVisible: boolean;
 }
 
 export default function BrowserBar({
@@ -31,6 +32,7 @@ export default function BrowserBar({
   onRefresh,
   onViewportChange,
   isAgentRunning,
+  isVisible,
 }: BrowserBarProps) {
   const [inputUrl, setInputUrl] = useState(url);
   const [activeViewport, setActiveViewport] = useState<
@@ -61,7 +63,7 @@ export default function BrowserBar({
         onViewportChange('375px', '667px');
         break;
       case 'tablet':
-        onViewportChange('768px', '1024px');
+        onViewportChange('640px', '853px');
         break;
       case 'desktop':
         onViewportChange('100%', '100%');
@@ -69,52 +71,46 @@ export default function BrowserBar({
     }
   };
 
+  const getViewportIcon = () => {
+    switch (activeViewport) {
+      case 'mobile':
+        return <Smartphone size={16} />;
+      case 'tablet':
+        return <Tablet size={16} />;
+      case 'desktop':
+        return <Monitor size={16} />;
+    }
+  };
+
+  const cycleViewport = () => {
+    const cycle = {
+      desktop: 'tablet',
+      tablet: 'mobile',
+      mobile: 'desktop',
+    } as const;
+    handleViewportClick(cycle[activeViewport]);
+  };
+
   return (
-    <div className='flex items-center gap-3 px-4 py-2.5 bg-[#1a1a1a]/95 backdrop-blur-xl text-white/90 rounded-2xl shadow-2xl border border-white/[0.08]'>
-      {/* Left section - Preview/Globe icon */}
-      <button
-        className='flex items-center gap-2 px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] rounded-xl transition-all duration-200 border border-white/[0.12]'
-        title='Preview'
-      >
-        <Globe size={20} className='text-blue-400' />
-        <span className='text-sm font-medium'>Preview</span>
-      </button>
-
-      {/* Cloud/Save button */}
-      <button
-        className='p-2.5 bg-white/[0.05] hover:bg-white/[0.1] rounded-xl transition-all duration-200 border border-white/[0.08]'
-        title='Save'
-      >
-        <svg
-          width='20'
-          height='20'
-          viewBox='0 0 24 24'
-          fill='none'
-          stroke='currentColor'
-          strokeWidth='2'
-          strokeLinecap='round'
-          strokeLinejoin='round'
-        >
-          <path d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z' />
-          <polyline points='17 21 17 13 7 13 7 21' />
-          <polyline points='7 3 7 8 15 8' />
-        </svg>
-      </button>
-
-      {/* New tab button */}
-      <button
-        className='p-2.5 bg-white/[0.05] hover:bg-white/[0.1] rounded-xl transition-all duration-200 border border-white/[0.08]'
-        title='New Tab'
-      >
-        <Plus size={20} />
-      </button>
-
+    <div
+      className='flex items-center justify-center gap-3 text-white/90 z-50 transition-all duration-500 ease-out mx-auto'
+      style={{
+        transform: isVisible
+          ? 'translateY(0) scale(1)'
+          : 'translateY(-20px) scale(0.95)',
+        opacity: isVisible ? 1 : 0,
+        pointerEvents: isVisible ? 'auto' : 'none',
+      }}
+    >
       {/* Center - URL Bar */}
-      <div className='flex-1 flex items-center gap-3 px-4 py-2.5 bg-black/20 rounded-xl border border-white/[0.08] group hover:border-white/[0.15] transition-all duration-200'>
-        <div className='flex items-center gap-2 text-sm text-white/60'>
-          <Monitor size={16} />
-          <span>/</span>
-        </div>
+      <div className='flex-1 flex max-w-125 items-center gap-3 p-1 bg-black backdrop-blur-3xl rounded-4xl group transition-all duration-300'>
+        <button
+          onClick={cycleViewport}
+          className='flex items-center gap-2 text-sm text-white/60 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full'
+          title={`Current: ${activeViewport.charAt(0).toUpperCase() + activeViewport.slice(1)} (click to cycle)`}
+        >
+          {getViewportIcon()}
+        </button>
 
         <input
           type='text'
@@ -122,7 +118,7 @@ export default function BrowserBar({
           onChange={(e) => setInputUrl(e.target.value)}
           onKeyDown={handleKeyDown}
           disabled={isAgentRunning}
-          className='flex-1 bg-transparent text-sm text-white/90 outline-none placeholder:text-white/30 disabled:opacity-50'
+          className='flex-1 bg-transparent text-xs text-white/90 outline-none placeholder:text-white/30 disabled:opacity-50'
           placeholder='Enter URL...'
         />
 
@@ -130,7 +126,7 @@ export default function BrowserBar({
           <button
             onClick={onBack}
             disabled={isAgentRunning}
-            className='p-1 hover:bg-white/[0.1] rounded-lg disabled:opacity-30 transition-all duration-200'
+            className='p-2 hover:bg-white/10 rounded-full disabled:opacity-30 transition-all duration-200'
             title='Back'
           >
             <ArrowLeft size={16} />
@@ -138,7 +134,7 @@ export default function BrowserBar({
           <button
             onClick={onForward}
             disabled={isAgentRunning}
-            className='p-1 hover:bg-white/[0.1] rounded-lg disabled:opacity-30 transition-all duration-200'
+            className='p-2 hover:bg-white/10 rounded-full disabled:opacity-30 transition-all duration-200'
             title='Forward'
           >
             <ArrowRight size={16} />
@@ -150,47 +146,10 @@ export default function BrowserBar({
         <button
           onClick={onRefresh}
           disabled={isAgentRunning}
-          className='p-1 hover:bg-white/[0.1] rounded-lg disabled:opacity-30 transition-all duration-200'
+          className='p-2 hover:bg-white/10 rounded-full disabled:opacity-30 transition-all duration-200'
           title='Refresh'
         >
           <RotateCw size={16} />
-        </button>
-      </div>
-
-      {/* Right section - Viewport controls */}
-      <div className='flex items-center gap-2'>
-        <button
-          onClick={() => handleViewportClick('mobile')}
-          className={`p-2.5 rounded-xl transition-all duration-200 border ${
-            activeViewport === 'mobile'
-              ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
-              : 'bg-white/[0.05] border-white/[0.08] text-white/60 hover:bg-white/[0.1] hover:text-white/90'
-          }`}
-          title='Mobile View (375x667)'
-        >
-          <Smartphone size={18} />
-        </button>
-        <button
-          onClick={() => handleViewportClick('tablet')}
-          className={`p-2.5 rounded-xl transition-all duration-200 border ${
-            activeViewport === 'tablet'
-              ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
-              : 'bg-white/[0.05] border-white/[0.08] text-white/60 hover:bg-white/[0.1] hover:text-white/90'
-          }`}
-          title='Tablet View (768x1024)'
-        >
-          <Tablet size={18} />
-        </button>
-        <button
-          onClick={() => handleViewportClick('desktop')}
-          className={`p-2.5 rounded-xl transition-all duration-200 border ${
-            activeViewport === 'desktop'
-              ? 'bg-blue-500/20 border-blue-500/50 text-blue-400'
-              : 'bg-white/[0.05] border-white/[0.08] text-white/60 hover:bg-white/[0.1] hover:text-white/90'
-          }`}
-          title='Desktop View'
-        >
-          <Monitor size={18} />
         </button>
       </div>
     </div>
